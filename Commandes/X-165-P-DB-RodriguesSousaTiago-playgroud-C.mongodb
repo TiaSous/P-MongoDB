@@ -99,7 +99,7 @@ db.movies.find({$and: [{"cast": "Brad Pitt"}, {num_mflix_comments: {$gte: 100}}]
 // Lister tous les films où l’acteur principal est une « femme »
 // TODO à refaire
 use("db_mflix");
-db.movies.find({plot: {$regex: /women/i}});
+db.movies.find({cast: {$regex: /^(Mrs\.|Ms\.)/}});
 
 // ex 20
 // Lister tous les films  où « Tom Hanks » est acteur, mais pas « réalisateur »
