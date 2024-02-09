@@ -117,3 +117,43 @@ db.movies.find({},{_id: 0, title:1, year: 1});
 // 3e page 
 use("db_mflix");
 db.movies.find({}).skip(20).limit(10);
+
+// ex 23
+// Rechercher les films qui ont au moins la langue « française » ou la langue « anglaise »
+// disponible, qui sont sortis à partir de « 1980 » inclus, et qui ont une note « Rotten 
+// Tomatoe » de plus de 4 ou un score « IMDB » supérieur ou égal à 8. Nous voulons 
+// également que « Brad Pitt » joue dans le film. Nous souhaitons n'avoir que les titres 
+// pour pouvoir les afficher directement. Enfin, nous ne voulons pas que le « synopsis »
+// du film parle de « nazis »
+use("db_mflix");
+db.movies.find({
+    $or:[
+        {languages: "English"},
+        {languages: "French"}
+    ],
+    year: {$gte: 1980},
+    $or:[
+        {"tomatoes.rotten": {$gt: 4}},
+        {"imbd.rating": {$gte: 8}}
+    ],
+    plot: {$ne:{$regex: /nazi/}},
+    cast: "Brad Pitt"
+},{_id: 0, title: 1});
+
+// ex 24
+// Nous voulons maintenant trier notre résultat suivant les « notes » attribués au film. 
+// D'abord par la note « Rotten Tomatoe », puis par la note « IMDB »
+use("db_mflix");
+db.movies.find({
+    $or:[
+        {languages: "English"},
+        {languages: "French"}
+    ],
+    year: {$gte: 1980},
+    $or:[
+        {"tomatoes.rotten": {$gt: 4}},
+        {"imbd.rating": {$gte: 8}}
+    ],
+    plot: {$ne:{$regex: /nazi/}},
+    cast: "Brad Pitt"
+},{_id: 0, title: 1}).sort({"tomatoes.rotten": -1, "imbd.rating": -1});
