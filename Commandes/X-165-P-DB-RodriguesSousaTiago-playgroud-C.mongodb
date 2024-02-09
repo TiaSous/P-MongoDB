@@ -41,7 +41,7 @@ db.movies.find(
         {genres: "Horror"},
         {genres: "Sci-Fi"}
     ]}
-);
+)
 
 // ex 9
 // Lister tous les films ayant exactement 3 différents genres
@@ -90,4 +90,30 @@ use("db_mflix");
 db.movies.find({$and: [{"cast": "Brad Pitt"}, {"cast": "Angelina Jolie"}]});
 
 // ex 18
-// Lister tous les films
+// Lister tous les films  dans lesquels « Brad Pitt » est acteur et 
+// dont le nombre de commentaires est au moins égal à 100
+use("db_mflix");
+db.movies.find({$and: [{"cast": "Brad Pitt"}, {num_mflix_comments: {$gte: 100}}]});
+
+// ex 19
+// Lister tous les films où l’acteur principal est une « femme »
+// TODO à refaire
+use("db_mflix");
+db.movies.find({plot: {$regex: /women/i}});
+
+// ex 20
+// Lister tous les films  où « Tom Hanks » est acteur, mais pas « réalisateur »
+use("db_mflix");
+db.movies.find({cast: "Tom Hanks", directors: {$ne: "Tom Hanks"}});
+
+// ex 21
+// Lister tous les films  mais doivent apparaître uniquement le titre et l’année de sortie de chaque film
+use("db_mflix");
+db.movies.find({},{_id: 0, title:1, year: 1});
+
+// ex 22 
+// Dans le cadre d’une pagination qui renvoie à chaque fois une liste de 10 films par 
+// page, voici la requête permettant de renvoyer uniquement la liste des films de la 
+// 3e page 
+use("db_mflix");
+db.movies.find({}).skip(20).limit(10);
