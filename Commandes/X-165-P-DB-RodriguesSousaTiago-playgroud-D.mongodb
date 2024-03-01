@@ -214,9 +214,6 @@ db.movies.aggregate([
         $sort: {
             _id: 1
         }
-    },
-    {
-        $skip: 90
     }
 ]);
 
@@ -264,21 +261,21 @@ db.movies.aggregate([
     },
     {
         $sort: {
-          _id: -1
+          _id: 1
         }
     }
 ]);
 
 // ex 12
 // Trouver le genre le plus courant dans chaque pays
-// TODO même problème qu'au 9
+// TODO n'affiche qu'un genre
 use("db_mflix");
 db.movies.aggregate([
     {
-        $unwind: "$genres"
+        $unwind: "$countries"
     },
     {
-        $unwind: "$countries"
+        $unwind: "$genres"
     },
     {
         $group: {
@@ -309,7 +306,6 @@ db.movies.aggregate([
 
 // ex 13
 // Trouver le nombre de films par classification et par décennie
-// TODO à faire
 use("db_mflix");
 db.movies.aggregate([
     {
@@ -326,7 +322,7 @@ db.movies.aggregate([
     },
     {
         $group: {
-            _id: "$decennie",
+            _id: {decennie: "$decennie", classification: "$rated"},
             NombreFilms: {
                 $count: {}
             },
@@ -358,3 +354,33 @@ db.movies.aggregate([
         }
     }
 ]);
+
+// ex 15
+// Notre objectif est de créer des groupes par pays. Pour chaque pays, nous voulons 
+// créer des groupes de chaque genre et obtenir le nombre de films, la note moyenne 
+// des films et la part de marché (nombre de films d'un genre pour un pays / total de 
+// films du pays).
+// TODO à Faire
+use("db_mflix");
+db.movie.aggregate([
+    db.movies.aggregate([
+        {
+            $unwind: "$countries"
+        },
+        {
+            $unwind: "$genres"
+        },
+        {
+            $group: {
+              _id: {pays: "$countries"},
+              NombreFilms: {
+                $count:{}},
+            }
+        },
+        {
+            $sort: {
+                _id: 1
+            }
+        }
+    ])
+])
