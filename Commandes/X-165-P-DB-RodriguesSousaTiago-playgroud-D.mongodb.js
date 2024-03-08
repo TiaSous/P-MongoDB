@@ -406,7 +406,7 @@ db.movies.aggregate(
                         NombreFilms: "$$genre.NombreFilms",
                         MoyenneNote: "$$genre.MoyenneNote",
                         PartDeMarche: {
-                            $multiply: [{$divide: ["$$genre.NombreFilms", "$NombreFilmsPays"]}, 100]
+                            $round: [{$multiply: [{$divide: ["$$genre.NombreFilms", "$NombreFilmsPays"]}, 100]}, 1]
                         }
                     }
                 }
