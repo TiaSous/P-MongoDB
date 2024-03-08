@@ -5,7 +5,6 @@ db.movies.find({ $text: { $search: "matrix" } });
 
 // ex 2
 // Recherche tous les films contenant la phase « best movie ever »
-// TODO ne le trouve pas collé
 use("db_mflix");
 db.movies.find({ $text: { $search: "\"best movie ever\"" } });
 
@@ -29,16 +28,3 @@ db.movies.find({ $text: { $search: "\"time travel\"" } }, { _id: 0, title: 1, fu
 // Rechercher des films avec des mots commençant par « inter » dans le titre
 use("db_mflix");
 db.movies.find({ title: { $regex: /\binter/i } }, { _id: 0, title: 1 })
-
-
-use("db_mflix");
-db.movies.find({ $text: { $search: "\"best movie ever\"" } }).explain("executionStats")
-
-use("db_mflix");
-db.movies.createIndex(
-    {
-        "title": "text",
-        "fullplot": "text"
-    }
-);
-

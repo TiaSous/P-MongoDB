@@ -59,7 +59,7 @@ use("db_mflix");
 db.movies.aggregate([
     {
         $match: {
-            year:{ $type: "number"} 
+            year: { $type: "number" }
         }
     },
     {
@@ -86,7 +86,7 @@ db.movies.aggregate([
     },
     {
         $sort: {
-          _id: 1
+            _id: 1
         }
     }
 ]);
@@ -192,14 +192,15 @@ db.movies.aggregate([
     },
     {
         $group: {
-          _id: {annee: "$year", genres: "$genres"},
-          count: {
-            $count:{}}
+            _id: { annee: "$year", genres: "$genres" },
+            count: {
+                $count: {}
+            }
         }
     },
     {
         $sort: {
-          count: -1
+            count: -1
         }
     },
     {
@@ -226,7 +227,7 @@ db.movies.aggregate([
     },
     {
         $group: {
-          _id: "$genres",
+            _id: "$genres",
         }
     }
 ])
@@ -238,7 +239,7 @@ use("db_mflix");
 db.movies.aggregate([
     {
         $match: {
-            year:{ $type: "number"} 
+            year: { $type: "number" }
         }
     },
     {
@@ -255,13 +256,13 @@ db.movies.aggregate([
                 $count: {}
             },
             ListeFilms: {
-                $push : "$title"
+                $push: "$title"
             },
         }
     },
     {
         $sort: {
-          _id: 1
+            _id: 1
         }
     }
 ]);
@@ -279,14 +280,15 @@ db.movies.aggregate([
     },
     {
         $group: {
-          _id: {pays: "$countries", genres: "$genres"},
-          count: {
-            $count:{}}
+            _id: { pays: "$countries", genres: "$genres" },
+            count: {
+                $count: {}
+            }
         }
     },
     {
         $sort: {
-          count: -1
+            count: -1
         }
     },
     {
@@ -310,7 +312,7 @@ use("db_mflix");
 db.movies.aggregate([
     {
         $match: {
-            year:{ $type: "number"} 
+            year: { $type: "number" }
         }
     },
     {
@@ -322,18 +324,18 @@ db.movies.aggregate([
     },
     {
         $group: {
-            _id: {decennie: "$decennie", classification: "$rated"},
+            _id: { decennie: "$decennie", classification: "$rated" },
             NombreFilms: {
                 $count: {}
             },
             ListeFilms: {
-                $push : "$title"
+                $push: "$title"
             },
         }
     },
     {
         $sort: {
-          _id: -1
+            _id: -1
         }
     }
 ]);
@@ -343,14 +345,17 @@ db.movies.aggregate([
 use("db_mflix");
 db.movies.aggregate([
     {
+        $unwind: "$directors"
+    },
+    {
         $group: {
-          _id: "$directors",
-          NombreFilms: {
-            $count:{}
-          },
-          TempsMoyenFilms: {
-            $avg: "$runtime"
-          }
+            _id: "$directors",
+            NombreFilms: {
+                $count: {}
+            },
+            TempsMoyenFilms: {
+                $avg: "$runtime"
+            }
         }
     }
 ]);
@@ -360,27 +365,52 @@ db.movies.aggregate([
 // créer des groupes de chaque genre et obtenir le nombre de films, la note moyenne 
 // des films et la part de marché (nombre de films d'un genre pour un pays / total de 
 // films du pays).
-// TODO à Faire
 use("db_mflix");
-db.movie.aggregate([
-    db.movies.aggregate([
-        {
-            $unwind: "$countries"
-        },
-        {
-            $unwind: "$genres"
-        },
-        {
-            $group: {
-              _id: {pays: "$countries"},
-              NombreFilms: {
-                $count:{}},
-            }
-        },
-        {
-            $sort: {
-                _id: 1
+db.movies.aggregate(
+    {
+        $unwind: "$countries"
+    },
+    {
+        $unwind: "$genres"
+    },
+    {
+        $group:{
+            _id: {pays: "$countries", genre: "$genres"},
+            NombreFilms: {$count:{}},
+            MoyenneNote: {$avg: "$imdb.rating"},
+        }
+    },
+    {
+        $group: {
+            _id: "$_id.pays",
+            genres: {
+                $push: {
+                   genre: "$_id.genre",
+                   NombreFilms: "$NombreFilms",
+                   MoyenneNote: {$round:["$MoyenneNote",0 ]}
+                }
+            },
+            NombreFilmsPays: {
+                $sum: "$NombreFilms"
             }
         }
-    ])
-])
+    },
+    {
+        $addFields: {
+            "genres": {
+                $map: {
+                    input: "$genres",
+                    as: "genre",
+                    in: {
+                        genre: "$$genre.genre",
+                        NombreFilms: "$$genre.NombreFilms",
+                        MoyenneNote: "$$genre.MoyenneNote",
+                        PartDeMarche: {
+                            $multiply: [{$divide: ["$$genre.NombreFilms", "$NombreFilmsPays"]}, 100]
+                        }
+                    }
+                }
+            }
+        }
+    }
+);

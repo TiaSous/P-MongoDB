@@ -80,9 +80,10 @@ db.movies.find({"awards.wins": {$gte: 1}});
 
 // ex 16
 // Lister tous les films où le réalisateur et le premier acteur sont les mêmes
-// TODO champ directors n'apparaît pas
 use("db_mflix");
-db.movies.find({$expr: {$eq:[{$arrayElemAt:["$cast", 1]}, "$directors"]}});
+db.movies.find({$expr: {
+    $eq:[{$arrayElemAt: ["$directors", 0]}, {$arrayElemAt: ["$cast", 0]}]
+}});
 
 // ex 17
 // Lister tous les films dans lesquels « Brad Pitt » et « Angelina Jolie » sont acteurs
@@ -97,9 +98,9 @@ db.movies.find({$and: [{"cast": "Brad Pitt"}, {num_mflix_comments: {$gte: 100}}]
 
 // ex 19
 // Lister tous les films où l’acteur principal est une « femme »
-// TODO à refaire
+// TODO on ne peut pas savoir qui est une femme 
 use("db_mflix");
-db.movies.find({cast: {$regex: /^(Mrs\.|Ms\.)/}});
+db.movies.find({cast: {$regex: /^Ms\./}});
 
 // ex 20
 // Lister tous les films  où « Tom Hanks » est acteur, mais pas « réalisateur »
@@ -152,8 +153,8 @@ db.movies.find({
     year: {$gte: 1980},
     $or:[
         {"tomatoes.rotten": {$gt: 4}},
-        {"imbd.rating": {$gte: 8}}
+        {"imdb.rating": {$gte: 8}}
     ],
     plot: {$ne:{$regex: /nazi/}},
     cast: "Brad Pitt"
-},{_id: 0, title: 1}).sort({"tomatoes.rotten": -1, "imbd.rating": -1});
+},{_id: 0, title: 1, "tomatoes.rotten": 1, "imdb.rating": 1}).sort({"tomatoes.rotten": -1, "imdb.rating": -1});
