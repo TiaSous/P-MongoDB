@@ -234,7 +234,9 @@ db.movies.aggregate([
 
 // ex 11
 // Lister les films par décennie avec le nombre total de films par décennie
-// TODO problème avec le count il en affiche un de trop compte les doublons
+
+// Le project est nécessaire car le count comptait un film de plus, 
+// pour régler ce problème je suis passer par substract dans le project pour le retirer un.
 use("db_mflix");
 db.movies.aggregate([
     {
@@ -256,13 +258,19 @@ db.movies.aggregate([
                 $count: {}
             },
             ListeFilms: {
-                $push: "$title"
+                $addToSet: "$title"
             },
         }
     },
     {
         $sort: {
             _id: 1
+        }
+    },
+    {
+        $project: {
+          NombreFilms:{ $subtract: ["$NombreFilms", 1]},
+          ListeFilms: 1
         }
     }
 ]);

@@ -9,6 +9,9 @@
 // 1.3. Gérer les indexes pour toutes les collections ;
 // 1.4. Gérer les rôles (et donc les utilisateurs) et leurs privilèges de cette base de données.
 
+// Ici les rôles userAdmin et readWrite permettent de pouvoir gérer les demandent ci-dessus. 
+// Il existe un rôle db_owner qui rassemble les 2 et qui permet de suppprimer une db. 
+// Je ne l'ai pas choisi car le fait qu'il puisse supprimer une db n'était pas demander.
 use("db_mflix");
 db.createRole({
     role: "Administrateur_db_mflix",
@@ -29,6 +32,8 @@ db.createRole({
 // 2.1. Lire les informations sur les films et les commentaires ;
 // 2.2. Ajouter ou supprimer un ou des commentaires
 
+// Ici j'ai choisi de passer par les actions plutôt que par les rôles car cela permet 
+// d'être plus précis sur les permissions données
 use("db_mflix");
 db.createRole({
     role: "Utilisateur",
@@ -50,6 +55,8 @@ db.createRole({
 // 3.2. Mettre à jour, lire et supprimer des films ou des commentaires ;
 // 3.3. Lire tous les commentaires.
 
+// Ici j'ai choisi de passer par les actions plutôt que par les rôles car les demandes assez 
+// précises et le fait de passer par les actions permet d'être précis sur les rôles donnés 
 use("db_mflix");
 db.createRole({
     role: "Gestionnaire",
