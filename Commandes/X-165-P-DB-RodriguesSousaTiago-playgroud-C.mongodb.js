@@ -134,7 +134,7 @@ db.movies.find({
     year: {$gte: 1980},
     $or:[
         {"tomatoes.rotten": {$gt: 4}},
-        {"imbd.rating": {$gte: 8}}
+        {"imdb.rating": {$gte: 8}}
     ],
     plot: {$ne:{$regex: /nazi/}},
     cast: "Brad Pitt"
